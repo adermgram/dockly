@@ -34,9 +34,9 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClient()
 
   async function handleSignOut() {
+    const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/login')
   }
@@ -56,7 +56,9 @@ export default function Sidebar() {
       {/* Nav */}
       <nav className="flex-1 space-y-0.5">
         {navItems.map(item => {
-          const active = (item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(item.href + '/'))
+          const active = item.href === '/'
+            ? pathname === '/' || pathname.startsWith('/dashboard')
+            : pathname === item.href || pathname.startsWith(item.href + '/')
           return (
             <Link
               key={item.href}

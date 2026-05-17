@@ -9,13 +9,13 @@ export default function LoginPage() {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
 
-  const supabase = createClient()
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
 
+    // createClient() called here so it only runs in browser, never during SSR
+    const supabase = createClient()
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
