@@ -1,8 +1,5 @@
 import { inngest } from '../client'
 import { createClient } from '@supabase/supabase-js'
-import { parsePdf } from '@/lib/parsers/pdf'
-import { parseDocx } from '@/lib/parsers/docx'
-import { parseTxt } from '@/lib/parsers/txt'
 import { splitText } from '@/lib/rag/chunk'
 import { embedTexts } from '@/lib/rag/embed'
 
@@ -41,9 +38,18 @@ export const ingestDocument = inngest.createFunction(
       const buffer = Buffer.from(await response.arrayBuffer())
 
       switch (doc.file_type) {
-        case 'pdf':  return parsePdf(buffer)
-        case 'docx': return parseDocx(buffer)
-        case 'txt':  return parseTxt(buffer)
+        case 'pdf': {
+          const { parsePdf } = await import('@/lib/parsers/pdf')
+          return parsePdf(buffer)
+        }
+        case 'docx': {
+          const { parseDocx } = await import('@/lib/parsers/docx')
+          return parseDocx(buffer)
+        }
+        case 'txt': {
+          const { parseTxt } = await import('@/lib/parsers/txt')
+          return parseTxt(buffer)
+        }
         default: throw new Error(`Unsupported type: ${doc.file_type}`)
       }
     })
